@@ -36,15 +36,6 @@ def push_frame(redis_client, frame_key, frame):
     return frame_key
 
 
-def pull_frame(redis_client: redis.Redis, frame_key: str):
-    logger.debug(f"                       Pulling {frame_key}")
-    pipe = redis_client.pipeline()
-    pipe.get(frame_key)
-    pipe.delete(frame_key)
-    raw_frame, _ = pipe.execute()
-    return frame_key, raw_frame
-
-
 def get_redis(host: str, port: int) -> redis.Redis:
     return redis.Redis(
         host=host,
@@ -105,6 +96,7 @@ def run_benchmark(
     while True:
         push_future: Future = frames_stream.get(timeout=5)
         frame_key = push_future.result(timeout=5)
+        logger.debug(f"                       Pulling {frame_key}")
         raw_frame = redis_client.get(frame_key)
         frames_pulled += 1
         if frames_pulled == frames_count:
