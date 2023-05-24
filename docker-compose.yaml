@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  benchmark-redis-py-3:
+    build:
+      context: .
+      dockerfile: RedisPy3.Dockerfile
+    command: python minimal_redis_benchmark.py
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+
+  benchmark-redis-py-4:
+    build:
+      context: .
+      dockerfile: RedisPy4.Dockerfile
+    command: python minimal_redis_benchmark.py
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+
+  redis:
+    image: redis:7.0
+    command: redis-server
